@@ -36,8 +36,8 @@ public class Drawables {
 class Elf extends Drawables{
 	private static int delay=250;
 	private static boolean canShoot=true;
-	private int bowXLoc = 800;
-	private int bowYLoc = 100;
+	private static int bowXLoc = 800;
+	private static int bowYLoc = 100;
 	
 	public boolean canShoot() {
 		return canShoot;
@@ -51,16 +51,65 @@ class Elf extends Drawables{
 		ArrayList<Integer> removedDwarfs = new ArrayList<Integer>();
 		ArrayList<Dwarf> dwarfList = Dwarf.getDwarfList();
 		
+		//calculates which dwarfs need to be killed 
 		for(int i=0;i<dwarfList.size();i++) {
-			 
+			Dwarf dwarf=dwarfList.get(i);
+			 if(x==bowXLoc) { //to avoid issues with divide by zero
+				 if(dwarf.getXLoc()<=x && x<=dwarf.getXLoc()+dwarf.getDwarfWidth() && //between the x's of the hitbox 
+					y<=dwarf.getYLoc()) { //assuming that the dwarf is below the elf
+				System.out.println("HIT");
+				removedDwarfs.add(i);
+				 }
+			 }
+			 else {
+				//checks to see if it intersects the line for any of the dwarf's hitboxes
+				 
+				if(dwarf.getYLoc()<=calcVertIntersect(x, y, dwarf.getXLoc()) &&
+					calcVertIntersect(x, y, dwarf.getXLoc()) <= dwarf.getYLoc()+dwarf.getDwarfHeight()
+						){
+					removedDwarfs.add(i);
+					System.out.println("HIT");
+				} else if(dwarf.getYLoc()<=calcVertIntersect(x, y, dwarf.getXLoc()+dwarf.getDwarfWidth()) &&
+					calcVertIntersect(x, y, dwarf.getXLoc()+dwarf.getDwarfWidth()) <= dwarf.getYLoc()+dwarf.getDwarfHeight()
+						){
+					removedDwarfs.add(i);
+					System.out.println("HIT");
+					
+				} else if(dwarf.getXLoc()<=calcHorizontalIntersect(x, y, dwarf.getYLoc()) &&
+						calcHorizontalIntersect(x, y, dwarf.getYLoc())<=dwarf.getYLoc()+dwarf.getDwarfHeight()) {
+					removedDwarfs.add(i);
+					System.out.println("HIT");
+				} else if(dwarf.getXLoc()<=calcHorizontalIntersect(x, y, dwarf.getYLoc()+dwarf.getDwarfHeight()) &&
+						calcHorizontalIntersect(x, y, dwarf.getYLoc()+dwarf.getDwarfHeight())<=dwarf.getYLoc()+dwarf.getDwarfHeight()) {
+					removedDwarfs.add(i);
+					System.out.println("HIT");
+				} else {
+					System.out.println("MISS");
+				}
+			 }
+		}
+		
+		for(int i= dwarfList.size()-1; i>=0; i--) {
+			dwarfList.add(dwarfList.get(i));
+			dwarfList.remove(i);
 		}
 	}
-	
+	/**
+	 * Calculates where the line given by the user intesects with a veritcal line 
+	 * @param x 
+	 * @param y
+	 * @param lineLoc
+	 * @return Returns the vertical height of where the lines intersect
+	 */
 	public int calcVertIntersect(int x, int y, int lineLoc) {
-		//add a catch for xLoc = x
 		double m = ( (bowYLoc-y)/(bowXLoc-x) );
 		double b = (y-m*x);
 		return (int) (m*lineLoc + b);
+	}
+	public int calcHorizontalIntersect(int x, int y, int lineLoc) {
+		double m = ( ((double)bowYLoc-y)/(bowXLoc-x) );
+		double b = (y-m*x);
+		return (int) ((lineLoc-b)/m);
 	}
 }
 
@@ -86,6 +135,15 @@ class Dwarf extends Drawables {
 	private DwarfMovement m;
 	private Image img;
 	
+	public Dwarf(int xEnter, int yEnter, int xExit, int yExit) {
+		xEnterLoc=xEnter;
+		yEnterLoc=yEnter;
+		
+		xExitLoc=xExit;
+		yExitLoc=yExit;
+	}
+	
+	
 	public Dwarf () {
 		String path = "src/images/dwarf.png";
 		img=(new ImageIcon(path)).getImage();
@@ -94,6 +152,21 @@ class Dwarf extends Drawables {
 		//m = new DwarfMovement();
 		//m.start();
 		//dwarfList.add(this);
+	}
+	
+	
+	
+	public Dwarf(Dwarf dwarf) {
+		String path = "src/images/dwarf.png";
+		img=(new ImageIcon(path)).getImage();
+		dwarfHeight=img.getHeight(null);
+		dwarfWidth=img.getWidth(null);
+		
+		xEnterLoc=dwarf.getXEnterLoc();
+		yEnterLoc=dwarf.getYEnterLoc();
+		
+		xExitLoc=dwarf.getXExitLoc();
+		yExitLoc=dwarf.getYExitLoc();
 	}
 	
 	public void setDwarfList(ArrayList<Dwarf> newDwarfList) {
@@ -144,12 +217,13 @@ class Dwarf extends Drawables {
 *
 */
 class Background extends Drawables{
+	private Image img;
+	public Background () {
+		String path = "src/images/background.png";
+		img=(new ImageIcon(path)).getImage();
+}
 	public void paint(Graphics2D g2d) {
-		g2d.setColor(Color.GREEN);
-		g2d.fillRect(0, 0, Game.getWidth(), Game.getHeight());
-		g2d.setColor(Color.GRAY);
-		g2d.fillRect(Game.getWidth()-240, 0, Game.getWidth(), Game.getHeight());
-		g2d.fillRect(0, 300, Game.getWidth(), 20);
-		
+		g2d.drawImage(img,20,20,null);
 	}
+		
 }

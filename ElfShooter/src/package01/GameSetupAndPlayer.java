@@ -63,8 +63,8 @@ public class GameSetupAndPlayer extends JPanel {
 		
 		baseSprites.add(new Background());
 		baseSprites.add(new Elf());
-		dwarfList.add(new Dwarf());
-		dwarfList.add(new Dwarf());
+		dwarfList.add(new Dwarf(0,0,0,1020));
+		dwarfList.add(new Dwarf(600,0,600,1020));
 		repaint();
 		
 		
@@ -147,15 +147,17 @@ public class GameSetupAndPlayer extends JPanel {
 		 * @param waitTimeMs The amount of time that the refresh handler will wait before refreshing the screen 
 		 */
 		public void runScreenRefesher(int waitTimeMs) {
-			while(true) {
-				try {
-					wait(waitTimeMs);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			synchronized(this) {
+				while(true) {
+					try {
+						wait(waitTimeMs);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					repaint();
 				}
-				
-				repaint();
 			}
 		}
 		public void run() {
