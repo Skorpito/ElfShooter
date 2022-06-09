@@ -13,13 +13,12 @@ import javax.swing.JLabel;
  * Author: Jan Bodnar
  * Website: http://zetcode.com
  */
-
 public class mainThreadForGame extends JFrame {
 
     private JLabel statusbar;
-
+    private GameSetupAndPlayer g;
+    
     public mainThreadForGame() {
-
         initUI();
     }
 
@@ -29,8 +28,8 @@ public class mainThreadForGame extends JFrame {
     	//sets up for drawing
         statusbar = new JLabel("");
         add(statusbar, BorderLayout.SOUTH);
-
-        add(new GameSetupAndPlayer(statusbar));
+        g=(new GameSetupAndPlayer(statusbar));
+        add(g);
 		
         setResizable(false);
         pack();
@@ -41,13 +40,12 @@ public class mainThreadForGame extends JFrame {
     }
 
     public static void main(String[] args) {
-    	
-    	//ignore this it works
-        EventQueue.invokeLater(() -> {
-
         	mainThreadForGame ex = new mainThreadForGame();
             ex.setVisible(true);
-        });
+        
         System.out.println("OK");
+
     }
+
+
 }
