@@ -35,11 +35,21 @@ public class Drawables {
  */
 class Elf extends Drawables{
 	private static int delay=250;
-	private static boolean canShoot=true;
 	private static int bowXLoc = 800;
 	private static int bowYLoc = 100;
+	private static RefreshHandler r;
+	private static boolean canShoot=true;
+
+	public Elf() {
+		r= new RefreshHandler();
+		r.start();
+	}
 	
-	public boolean canShoot() {
+	public void setCanShoot(boolean newStatus) {
+		canShoot=newStatus;
+	}
+	
+	public boolean getCanShoot() {
 		return canShoot;
 	}
 
@@ -121,6 +131,23 @@ class Elf extends Drawables{
 		double m = ( ((double)bowYLoc-y)/(bowXLoc-x) );
 		double b = (y-m*x);
 		return (int) ((lineLoc-b)/m);
+	}
+	
+	/**
+	 * Class that deals with removing the line and making sure that the user can't shoot rapidly
+	 */
+	protected class RefreshHandler extends Thread{
+		private final int refreshTimeMs=200;
+		public void run () {
+			while (true) {
+				try {wait(refreshTimeMs);}
+				catch (InterruptedException e) {e.printStackTrace();}
+				
+				if(!getCanShoot()) {
+					setCanShoot(true);
+				}
+			}		
+		}
 	}
 }
 

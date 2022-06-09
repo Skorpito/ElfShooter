@@ -118,9 +118,10 @@ public class GameSetupAndPlayer extends JPanel {
 			int x = e.getX();
 			int y = e.getY();
 
-			if (elf.canShoot()) {
+			if (elf.getCanShoot()) {
 				sprites.add(new Line(x,y));
 				elf.shoot(x, y);
+				elf.setCanShoot(false);
 
 			}
 
